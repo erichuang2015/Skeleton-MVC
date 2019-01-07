@@ -22,4 +22,9 @@ $db_config = require(APP_PATH.'database.php');
  */
 require_once BASE_PATH."autoloader.php";
 require_once BASE_PATH."helpers.php";
-require_once APP_PATH."routes.php";
+/**
+ * Router initialization
+ */
+// $router = new Framework\Core\Router();
+// require_once APP_PATH."routes.php";
+// $router->handle();

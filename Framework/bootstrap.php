@@ -1,7 +1,6 @@
 <?php
 
 // Defining the required constants
-
 define('ROOT', dirname(getcwd()).DIRECTORY_SEPARATOR);
 define('APP_PATH', ROOT.'App'.DIRECTORY_SEPARATOR);
 define('BASE_PATH', ROOT.'Framework'.DIRECTORY_SEPARATOR);
@@ -18,7 +17,7 @@ $config = require(APP_PATH.'config.php');
 $db_config = require(APP_PATH.'database.php');
 
 if (!(is_array($config) && is_array($db_config))) {
-    throw new Exception('$config and $db_config should be array!');
+    throw new Exception('$config and $db_config should be an array!');
 }
 
 /**
@@ -26,4 +25,10 @@ if (!(is_array($config) && is_array($db_config))) {
  */
 require_once BASE_PATH."autoloader.php";
 require_once BASE_PATH."helpers.php";
+
+/**
+ * Router initialization
+ */
+$router = new Framework\Core\Router();
 require_once APP_PATH."routes.php";
+$router->run();
