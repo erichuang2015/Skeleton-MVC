@@ -17,3 +17,8 @@ if (!function_exists('getallheaders')) {
         }
     }
 }
+
+function hsc(&$value, $key)
+{
+    $value = htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
+}
