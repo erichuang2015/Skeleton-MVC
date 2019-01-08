@@ -1,6 +1,6 @@
 <?php
 
-namespace Framework\Core;
+namespace Skeleton\Core;
 
 final class Router
 {

@@ -1,3 +1,3 @@
 <?php
 
-require_once '../Framework/bootstrap.php';
+require_once '../Skeleton/bootstrap.php';

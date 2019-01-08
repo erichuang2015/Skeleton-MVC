@@ -3,7 +3,7 @@
 // Defining the required constants
 define('ROOT', dirname(getcwd()).DIRECTORY_SEPARATOR);
 define('APP_PATH', ROOT.'App'.DIRECTORY_SEPARATOR);
-define('BASE_PATH', ROOT.'Framework'.DIRECTORY_SEPARATOR);
+define('BASE_PATH', ROOT.'Skeleton'.DIRECTORY_SEPARATOR);
 define('STORAGE_PATH', ROOT.'storage'.DIRECTORY_SEPARATOR);
 
 define('CONTROLLER_PATH', APP_PATH.'Controllers'.DIRECTORY_SEPARATOR);
@@ -29,6 +29,6 @@ require_once BASE_PATH."helpers.php";
 /**
  * Router initialization
  */
-$router = new Framework\Core\Router();
+$router = new Skeleton\Core\Router();
 require_once APP_PATH."routes.php";
 $router->run();

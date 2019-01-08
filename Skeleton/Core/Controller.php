@@ -1,6 +1,6 @@
 <?php
 
-namespace Framework\Core;
+namespace Skeleton\Core;
 
 abstract class Controller
 {

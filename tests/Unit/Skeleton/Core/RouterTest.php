@@ -1,7 +1,7 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use Framework\Core\Router;
+use Skeleton\Core\Router;
 
 class RouterTest extends TestCase
 {
