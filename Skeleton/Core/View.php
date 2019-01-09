@@ -35,9 +35,8 @@ final class View
      */
     public function view($views, $data = array())
     {
-        // xss clean data
-        array_walk_recursive($data, 'hsc');
-        extract($data);
+        // xss clean data before extracting to symbol table
+        extract(hsa($data));
 
         ob_start();
         foreach ((array)$views as $view) {
