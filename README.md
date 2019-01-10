@@ -5,14 +5,14 @@
 <hr>
 
 ### Here's Development Roadmap
-_This roadmap only shows which component of framework has been finished( i.e. are in a working condition). Keep **watch** on project as it's really in active development stage and only a month or less far from First Alpha_
+_This roadmap only shows which component of framework has been finished( i.e. are in a working condition). Keep **watch** on project as it's really in active development stage and only a month or less far from First Alpha._
 
 - [ ] **Status of First Alpha**
     - [x] Router Class
     - [x] View Class
     - [x] Input Class
-    - [ ] HttpRequest Class
-    - [ ] HttpResponse Class
+    - [x] Request Class
+    - [ ] Response Class
     - [ ] Controller Class
     - [ ] Database Class
     - [ ] Model Class
