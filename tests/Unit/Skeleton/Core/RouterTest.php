@@ -2,6 +2,7 @@
 
 use PHPUnit\Framework\TestCase;
 use Skeleton\Core\Router;
+use Skeleton\Core\Request;
 
 class RouterTest extends TestCase
 {
@@ -9,7 +10,8 @@ class RouterTest extends TestCase
 
     protected function setUp()
     {
-        $this->router = new Router;
+        $req = $this->createMock(Request::class);
+        $this->router = new Router($req);
     }
 
     public function aP($obj, $prop)

@@ -27,8 +27,14 @@ require_once BASE_PATH."autoloader.php";
 require_once BASE_PATH."helpers.php";
 
 /**
+ * Request to handle
+ */
+
+$request = new Skeleton\Core\Request;
+
+/**
  * Router initialization
  */
-$router = new Skeleton\Core\Router();
+$router = new Skeleton\Core\Router($request);
 require_once APP_PATH."routes.php";
 $router->run();

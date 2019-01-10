@@ -26,12 +26,17 @@ final class Router
     private $notFoundCallback;
 
     /**
-     * Server base path
+     * Request instance
      *
-     * @var string
+     * @var Request
      */
-    private $serverBasePath = null;
+    private $request;
     
+    public function __construct(Request $request)
+    {
+        $this->request = $request;
+    }
+
     /**
      * Call to route methods such as get, post, etc...
      *
@@ -44,15 +49,22 @@ final class Router
         $this->match($method, $arguments[0], $arguments[1]);
     }
 
+    /**
+     * Matches any method on a given pattern
+     *
+     * @param string $pattern
+     * @param string $fn
+     * @return void
+     */
     public function any($pattern, $fn)
     {
         $this->match(['GET', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'], $pattern, $fn);
     }
 
-    public function resource($pattern, $fn)
-    {
-        // TODO:: resource route
-    }
+    //public function resource($pattern, $fn)
+    //{
+    // TODO:: resource route
+    //}
 
     /**
      * Add the route to the routing array
@@ -77,12 +89,12 @@ final class Router
     /**
      * Start the router instance
      *
-     * @return bool whether or not route was hadled
+     * @return bool whether or not route was handled
      */
     public function run()
     {
         $numHandled = 0;
-        $requestMethod = $this->getRequestMethod();
+        $requestMethod = $this->request->method();
 
         // Handle route for requested method
         if (isset($this->routes[$requestMethod])) {
@@ -127,7 +139,7 @@ final class Router
     private function handle($routes, $quitAfterRun = true)
     {
         $numHandled = 0;
-        $uri = $this->getCurrentUri();
+        $uri = $this->request->path();
 
         // run over every route and find the matching one
         foreach ($routes as $route) {
@@ -162,60 +174,6 @@ final class Router
     }
 
     /**
-     * Returns the server request method
-     *
-     * @return string
-     */
-    protected function getRequestMethod()
-    {
-        $method = $_SERVER['REQUEST_METHOD'];
-        
-        // If method is head then don't output anything and chnage it to GET
-        if ($method == 'HEAD') {
-            ob_start();
-            $method = 'GET';
-        } elseif ($method == 'POST') {
-            // Check for header overrides like put, patch, delete
-            $headers = $this->getRequestHeaders();
-            if (isset($headers['X-HTTP-Method-Override']) && in_array($headers['X-HTTP-Method-Override'], array('PUT', 'DELETE', 'PATCH'))) {
-                $method = $headers['X-HTTP-Method-Override'];
-            }
-        }
-
-        return $method;
-    }
-
-    /**
-     * Returns the request headers
-     *
-     * @return array
-     */
-    public function getRequestHeaders()
-    {
-        // getallheaders is defined in helpers
-        $headers = getallheaders();
-        return $headers !== false ? $headers : array();
-    }
-
-    /**
-     * Returns the current uri
-     *
-     * @return void
-     */
-    protected function getCurrentUri()
-    {
-        // get current uri and remove the base path form it
-        $uri = substr($_SERVER['REQUEST_URI'], strlen($this->getBasePath()));
-
-        // Remove the get params
-        if (strstr($uri, '?')) {
-            $uri = substr($uri, 0, strpos($uri, '?'));
-        }
-
-        return '/'.trim($uri, '/');
-    }
-    
-    /**
      * Invoke the given function with parameters
      *
      * @param string $fn
@@ -233,17 +191,5 @@ final class Router
             $controller = 'App\\Controllers\\'.$controller;
             call_user_func_array(array(new $controller(), $method), $params);
         }
-    }
-
-    /**
-     * returns the base path
-     * @return string
-     */
-    protected function getBasePath()
-    {
-        if ($this->serverBasePath === null) {
-            $this->serverBasePath = implode('/', array_slice(explode('/', $_SERVER['SCRIPT_NAME']), 0, -1)).'/';
-        }
-        return $this->serverBasePath;
     }
 }
