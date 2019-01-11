@@ -7,6 +7,39 @@ namespace Skeleton\Core;
  */
 class Input
 {
+    /**
+     * @var array
+     */
+    private $serverParams = [];
+    
+    /**
+     * @var array
+     */
+    private $getParams = [];
+    
+    /**
+     * @var array
+     */
+    private $postParams = [];
+    
+    /**
+     * @var array
+     */
+    private $filesParams = [];
+    
+    /**
+     * @var array
+     */
+    private $cookieParams = [];
+
+    public function __construct($server = [], $get = [], $post = [], $files = [], $cookie = [])
+    {
+        $this->serverParams = $server;
+        $this->getParams = $get;
+        $this->postParams = $post;
+        $this->filesParams = $files;
+        $this->cookieParams = $cookie;
+    }
 
     /**
      * Used to fetch value from superglobals like $\_GET, $\_POST, etc
@@ -61,7 +94,7 @@ class Input
      */
     public function get($index = null)
     {
-        return $this->fetchFromArray($_GET, $index);
+        return $this->fetchFromArray($this->getParams, $index);
     }
 
     /**
@@ -72,7 +105,7 @@ class Input
     */
     public function post($index = null)
     {
-        return $this->fetchFromArray($_POST, $index);
+        return $this->fetchFromArray($this->postParams, $index);
     }
 
     /**
@@ -83,7 +116,7 @@ class Input
     */
     public function cookie($index = null)
     {
-        return $this->fetchFromArray($_COOKIE, $index);
+        return $this->fetchFromArray($this->cookieParams, $index);
     }
 
     /**
@@ -92,22 +125,13 @@ class Input
      * @param mixed $index
      * @return array|string
     */
-    public function server($index)
+    public function server($index = null)
     {
-        return $this->fetchFromArray($_SERVER, $index);
+        return $this->fetchFromArray($this->serverParams, $index);
     }
 
-    /**
-     * Fetch the value form input field
-     *
-     * @param mixed $index
-     * @return array|string
-    */
-    public function input($index = null)
+    public function __call($name, $arguments)
     {
-        $value = ($_SERVER['REQUEST_METHOD'] == 'GET') ?
-            $this->get($index, $xssClean) :
-            $this->post($index, $xssClean);
-        return $value;
+        throw new \BadMethodCallException("Undefined method called $name", 1);
     }
 }

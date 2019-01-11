@@ -13,11 +13,11 @@ define('VIEW_PATH', APP_PATH.'views'.DIRECTORY_SEPARATOR);
 /**
  * Application/Database Configuration from user
  */
-$config = require(APP_PATH.'config.php');
-$db_config = require(APP_PATH.'database.php');
+$config = require_once APP_PATH.'config.php';
+$db_config = require_once APP_PATH.'database.php';
 
 if (!(is_array($config) && is_array($db_config))) {
-    throw new Exception('$config and $db_config should be an array!');
+    throw new \InvalidArgumentException('$config and $db_config should be an array!');
 }
 
 /**
@@ -30,7 +30,7 @@ require_once BASE_PATH."helpers.php";
  * Request to handle
  */
 
-$request = new Skeleton\Core\Request;
+$request = new Skeleton\Core\Request($_SERVER, $_GET, $_POST, $_FILES, $_COOKIE);
 
 /**
  * Router initialization

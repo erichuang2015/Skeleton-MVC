@@ -5,28 +5,46 @@ namespace Skeleton\Core;
 /**
  * Class representation of Http request
  */
-class Request extends Input
+class Request
 {
     /**
-     * Server base path
-     *
      * @var string
      */
     private $serverBasePath = null;
-    
-    public function __construct()
+
+    /**
+     * @var array
+     */
+    private $requestHeaders = [];
+
+    /**
+     * Input instnace for handeling suprglobals
+     *
+     * @var Input
+     */
+    private $inputInstance;
+
+    public function __construct($server = [], $get = [], $post = [], $files = [], $cookie = [])
     {
-        // TODO: Accept request properties like $_SERVER, protocol, etc.
+        $this->inputInstance = new Input($server, $get, $post, $files, $cookie);
     }
 
     /**
-     * Returns the server request method
+     * Call input class method as if it yours
+     */
+    public function __call($name, $arguments)
+    {
+        return $this->inputInstance->$name(isset($arguments[0]) ? $arguments[0] : null);
+    }
+
+    /**
+     * Type of method submitted i.e. get, post, etc.
      *
      * @return string
      */
     public function method()
     {
-        $method = $_SERVER['REQUEST_METHOD'];
+        $method = $this->server('REQUEST_METHOD');
         
         // If method is head then don't output anything and chnage it to GET
         if ($method == 'HEAD') {
@@ -44,26 +62,31 @@ class Request extends Input
     }
 
     /**
-     * Returns the request headers
+     * Request headers similar to getallheaders function
      *
      * @return array
      */
     public function headers()
     {
-        // getallheaders is defined in helpers
-        $headers = getallheaders();
-        return $headers !== false ? $headers : array();
+        if (empty($this->requestHeaders)) {
+            foreach ($this->server() as $name => $value) {
+                if ((substr($name, 0, 5) == 'HTTP_') || ($name == 'CONTENT_TYPE') || ($name == 'CONTENT_LENGTH')) {
+                    $this->requestHeaders[str_replace(array(' ', 'Http'), array('-', 'HTTP'), ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+                }
+            }
+        }
+        return $this->requestHeaders;
     }
 
     /**
-     * Returns the current uri
+     * Current uri i.e. part after www.example.com/
      *
-     * @return void
+     * @return string
      */
     public function path()
     {
         // get current uri and remove the base path form it
-        $uri = substr($_SERVER['REQUEST_URI'], strlen($this->basePath()));
+        $uri = substr($this->server('REQUEST_URI'), strlen($this->basePath()));
 
         // Remove the get params
         if (strstr($uri, '?')) {
@@ -74,13 +97,14 @@ class Request extends Input
     }
     
     /**
-     * Returns the base path
+     * Base path of applicaton if application is deployed under directory
+     *
      * @return string
      */
     public function basePath()
     {
         if ($this->serverBasePath === null) {
-            $this->serverBasePath = implode('/', array_slice(explode('/', $_SERVER['SCRIPT_NAME']), 0, -1)).'/';
+            $this->serverBasePath = implode('/', array_slice(explode('/', $this->server('SCRIPT_NAME')), 0, -1)).'/';
         }
         return $this->serverBasePath;
     }
