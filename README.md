@@ -12,7 +12,7 @@ _This roadmap only shows which component of framework has been finished( i.e. ar
     - [x] View Class
     - [x] Input Class
     - [x] Request Class
-    - [ ] Response Class
+    - [x] Response Class
     - [ ] Controller Class
     - [ ] Database Class
     - [ ] Model Class
