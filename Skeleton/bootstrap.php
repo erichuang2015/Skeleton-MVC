@@ -37,4 +37,12 @@ $request = new Skeleton\Core\Request($_SERVER, $_GET, $_POST, $_FILES, $_COOKIE)
  */
 $router = new Skeleton\Core\Router($request);
 require_once APP_PATH."routes.php";
-$router->run();
+
+$response = $router->run();
+if ($response instanceof Skeleton\Core\Response) {
+    foreach ($response->getHeaders() as $header => $value) {
+        header("$header: $value");
+    }
+    http_response_code($response->getStatus());
+    echo $response->getContent();
+}

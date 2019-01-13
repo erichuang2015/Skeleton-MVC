@@ -48,3 +48,58 @@ function hsa($value)
 
     return $clean_data;
 }
+
+if (!function_exists('response')) {
+    /**
+     * Create a Http Response
+     *
+     * @param string $content
+     * @param integer $status
+     * @return \Skeleton\Core\Response
+     */
+    function response($content = '', $status = 200)
+    {
+        return new \Skeleton\Core\Response($content, $status);
+    }
+}
+
+if (!function_exists('view')) {
+    /**
+     * Creates view/views as response
+     *
+     * @param string|array $view
+     * @param array $data
+     * @param integer $status
+     * @param array $headers
+     * @return \Skeleton\Core\Response
+     */
+    function view($view, $data = [], $status = 200, $headers = [])
+    {
+        $viewLoader = new \Skeleton\Core\View(VIEW_PATH);
+        return response(
+            $viewLoader->view($view, $data),
+            $status,
+            $headers
+        )->header("Content-Type", "text/html");
+    }
+}
+
+if (!function_exists('json')) {
+    /**
+     * Creates Json response with specified hedaers
+     *
+     * @param array|string $data
+     * @param integer $status
+     * @param array $headers
+     * @return \Skeleton\Core\Reponse
+     */
+    function json($data = [], $status = 200, $headers = [])
+    {
+        $viewParser = new \Skeleton\Core\View(VIEW_PATH);
+        return response(
+            \json_encode($data),
+            $status,
+            $headers
+        )->header("Content-Type", "application/json");
+    }
+}

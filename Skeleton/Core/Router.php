@@ -2,6 +2,9 @@
 
 namespace Skeleton\Core;
 
+/**
+ * Router Class stores, matches and calls routing related actions
+ */
 final class Router
 {
     /**
@@ -25,13 +28,12 @@ final class Router
      */
     private $notFoundCallback;
 
-    /**
-     * Request instance
-     *
-     * @var Request
-     */
-    private $request;
-    
+    /** @var Request */
+    private $request = null;
+
+    /** @var Response */
+    private $response = null;
+   
     public function __construct(Request $request)
     {
         $this->request = $request;
@@ -40,8 +42,8 @@ final class Router
     /**
      * Call to route methods such as get, post, etc...
      *
-     * @param string $pattern
-     * @param mixed $fn
+     * @param string $method which http method to handle
+     * @param array $arguments pattern and function to be handled
      * @return void
      */
     public function __call($method, $arguments)
@@ -88,8 +90,9 @@ final class Router
 
     /**
      * Start the router instance
+     * returns the value from Callback
      *
-     * @return bool whether or not route was handled
+     * @return Response|false
      */
     public function run()
     {
@@ -104,7 +107,7 @@ final class Router
         // call for 404 callback if its present
         if ($numHandled === 0) {
             if ($this->notFoundCallback) {
-                $this->invoke($this->notFoundCallback);
+                $this->response = $this->invoke($this->notFoundCallback);
             } else {
                 header($_SERVER['SERVER_PROTOCOL'].' 404 Not Found');
             }
@@ -115,7 +118,7 @@ final class Router
             ob_end_clean();
         }
 
-        return $numHandled !== 0;
+        return $this->response ?: false;
     }
 
     /**
@@ -160,7 +163,7 @@ final class Router
                 }, $matches, array_keys($matches));
 
                 // if pattern matches call the related function
-                $this->invoke($route['fn'], $params);
+                $this->response = $this->invoke($route['fn'], $params);
                 
                 $numHandled++;
                 
@@ -178,18 +181,21 @@ final class Router
      *
      * @param string $fn
      * @param array $params
-     * @return void
+     * @return Response|mixed
      */
     private function invoke($fn, $params = array())
     {
         // check if its a callback if then call it
         if (is_callable($fn)) {
-            call_user_func_array($fn, $params);
+            $this->response = call_user_func_array($fn, $params);
         } elseif (stripos($fn, '@') !== false) {
             // laravel like Controller@method routing
             list($controller, $method) = explode('@', $fn);
             $controller = 'App\\Controllers\\'.$controller;
-            call_user_func_array(array(new $controller(), $method), $params);
+            $this->response = call_user_func_array(array(new $controller(), $method), $params);
+        } else {
+            throw new \InvalidArgumentException("Only callback or String allowed!");
         }
+        return $this->response;
     }
 }
