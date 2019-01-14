@@ -1,8 +1,15 @@
 <?php
 
+namespace Skeleton\Core;
+
 class Loader
 {
+    private $viewPath;
 
+    public function __construct($viewPath)
+    {
+        $this->viewPath = $viewPath;
+    }
     /**
      * Create a Http Response
      *
@@ -26,9 +33,21 @@ class Loader
      */
     public function view($view, $data = [], $status = 200, $headers = [])
     {
-        $viewLoader = new View(VIEW_PATH);
-        return response(
-            $viewLoader->view($view, $data),
+        extract(hsa($data));
+
+        ob_start();
+        $view = $this->viewPath.str_replace('.', DIRECTORY_SEPARATOR, $view).'.php';
+        if (file_exists($view)) {
+            include($view);
+        } else {
+            ob_end_clean();
+            throw new \RuntimeException("can't find view $view");
+        }
+        $content = ob_get_contents();
+        ob_end_clean();
+        
+        return $this->response(
+            $content,
             $status,
             $headers
         )->header("Content-Type", "text/html");
@@ -44,7 +63,7 @@ class Loader
      */
     public function json($data = [], $status = 200, $headers = [])
     {
-        return response(
+        return $this->response(
             \json_encode($data),
             $status,
             $headers

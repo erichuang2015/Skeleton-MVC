@@ -49,5 +49,21 @@ function hsa($value)
     return $clean_data;
 }
 
+if (!function_exists('getInstance')) {
+    function getInstance()
+    {
+        return Skeleton\Core\Skeleton::getInstance();
+    }
+}
+
 if (!function_exists('response')) {
+    /**
+     * Generate reponse with loader class
+     *
+     * @return Skeleton\Core\Loader
+     */
+    function response()
+    {
+        return getInstance()->loader;
+    }
 }

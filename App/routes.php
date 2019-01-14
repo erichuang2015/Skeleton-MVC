@@ -1,3 +1,3 @@
 <?php
 
-$router->get('/', 'PagesController@index');
+$this->router->get('/', 'PagesController@index');
