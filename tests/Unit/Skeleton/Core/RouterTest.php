@@ -25,10 +25,10 @@ class RouterTest extends TestCase
     public function test_match_adds_allowed_method()
     {
         // $this->router = new Router();
-        $this->router->match('GET', 'test/demo', 'DemoController@demo');
+        $this->router->match('GET', 'test/demo', 'DemoController@demo', ['Demo']);
 
         $this->assertEquals(
-            ['GET'=>[['pattern' => 'test/demo', 'fn' => 'DemoController@demo']]],
+            ['GET'=>[['pattern' => 'test/demo', 'fn' => 'DemoController@demo', 'befores' => ["Demo"]]]],
             $this->aP($this->router, 'routes')
         );
     }

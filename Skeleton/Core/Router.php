@@ -48,7 +48,11 @@ final class Router
      */
     public function __call($method, $arguments)
     {
-        $this->match($method, $arguments[0], $arguments[1]);
+        $befores = [];
+        if (isset($arguments[2])) {
+            $befores = $arguments[2];
+        }
+        $this->match($method, $arguments[0], $arguments[1], $befores);
     }
 
     /**
@@ -58,9 +62,9 @@ final class Router
      * @param string $fn
      * @return void
      */
-    public function any($pattern, $fn)
+    public function any($pattern, $fn, $befores = [])
     {
-        $this->match(['GET', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'], $pattern, $fn);
+        return $this->match(['GET', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'], $pattern, $fn, $befores);
     }
 
     //public function resource($pattern, $fn)
@@ -71,18 +75,20 @@ final class Router
     /**
      * Add the route to the routing array
      *
-     * @param mixed $methods
-     * @param string $pattern
-     * @param string $fn
+     * @param mixed $methods    Http Methods
+     * @param string $pattern   Uri
+     * @param string $fn        Callback
+     * @param array $befores    Middleware
      * @return
      */
-    public function match($methods, $pattern, $fn)
+    public function match($methods, $pattern, $fn, $befores = [])
     {
         foreach ((array)$methods as $method) {
             if (in_array(strtoupper($method), $this->routerMethods)) {
                 $this->routes[strtoupper($method)][] = array(
                     'pattern' => $pattern,
-                    'fn' => $fn
+                    'fn' => $fn,
+                    'befores' => $befores
                 );
             }
         }
@@ -98,6 +104,8 @@ final class Router
     {
         $numHandled = 0;
         $requestMethod = $this->request->method();
+
+        // TODO: implement middleware handling
 
         // Handle route for requested method
         if (isset($this->routes[$requestMethod])) {
