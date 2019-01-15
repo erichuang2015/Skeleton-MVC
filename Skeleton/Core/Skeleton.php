@@ -54,9 +54,6 @@ class Skeleton
      */
     public function __get($name)
     {
-        // if (\strpos($name, 'Path') === false) {
-        //     throw new \RuntimeException("Undefined property $name");
-        // }
         return $this->$name;
     }
 

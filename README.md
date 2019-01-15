@@ -8,25 +8,21 @@
 _This roadmap only shows which component of framework has been finished( i.e. are in a working condition). Keep **watch** on project as it's really in active development stage and only a month or less far from First Alpha._
 
 - [ ] **Status of First Alpha**
-    - [x] Router Class
-    - [x] View Class
-    - [x] Input Class
-    - [x] Request Class
-    - [x] Response Class
-    - [ ] Controller Class
-    - [ ] Database Class
-    - [ ] Model Class
+    - [x] Routing
+    - [x] Superglobal wrppaer
+    - [x] Request-Response
+    - [x] Skeleton Bootstrapper
+    - [ ] Middleware Support
     - [ ] Security Class
-    - [ ] Middleware Class
+    - [ ] Database Abstraction
 - [ ] **Planned fetaures for Second alpha**
-    - [ ] Database abstraction
     - [ ] Bot (Component Generator. Ex. Controller, Model, etc.)
-    - [ ] Input Validation Class
-    - [ ] File Validation Class
+    - [ ] Validation Class
     - [ ] Logging
 
 <hr>
-If you're intrested in Skeleton MVC you can contribute to project by contacting at: v@kubre.in
+
+If you're intrested in Skeleton MVC you can contribute to project by contacting at v@kubre.in
 
 **Do not post security issues publicly!**
 
