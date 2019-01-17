@@ -12,7 +12,7 @@ _This roadmap only shows which component of framework has been finished( i.e. ar
     - [x] Superglobal wrppaer
     - [x] Request-Response
     - [x] Skeleton Bootstrapper
-    - [ ] Middleware Support
+    - [x] Middleware Support
     - [ ] Security Class
     - [ ] Database Abstraction
 - [ ] **Planned fetaures for Second alpha**

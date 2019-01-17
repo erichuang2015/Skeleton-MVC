@@ -50,6 +50,9 @@ final class Router
     {
         $befores = [];
         if (isset($arguments[2])) {
+            if (!\is_array($arguments[2])) {
+                throw new \InvalidArgumentException("$method accept middleware as an array");
+            }
             $befores = $arguments[2];
         }
         $this->match($method, $arguments[0], $arguments[1], $befores);
@@ -58,8 +61,9 @@ final class Router
     /**
      * Matches any method on a given pattern
      *
-     * @param string $pattern
-     * @param string $fn
+     * @param string $pattern   URI pattern
+     * @param string $fn        Action
+     * @param array $befores    Middleware
      * @return void
      */
     public function any($pattern, $fn, $befores = [])
@@ -75,9 +79,9 @@ final class Router
     /**
      * Add the route to the routing array
      *
-     * @param mixed $methods    Http Methods
-     * @param string $pattern   Uri
-     * @param string $fn        Callback
+     * @param mixed $methods    Http Methods to be listened
+     * @param string $pattern   Uri pattern
+     * @param string $fn        Action
      * @param array $befores    Middleware
      * @return
      */
@@ -104,8 +108,6 @@ final class Router
     {
         $numHandled = 0;
         $requestMethod = $this->request->method();
-
-        // TODO: implement middleware handling
 
         // Handle route for requested method
         if (isset($this->routes[$requestMethod])) {
@@ -170,7 +172,19 @@ final class Router
                     }
                 }, $matches, array_keys($matches));
 
-                // if pattern matches call the related function
+                \array_unshift($params, $this->request);
+
+                // Don't let middleware output anything
+                \ob_start();
+                // Check and handle Middleware
+                if (!empty($route['befores'])) {
+                    foreach ($route['befores'] as $middleware) {
+                        $this->invoke($middleware, $params);
+                    }
+                }
+                \ob_end_clean();
+
+                // as pattern is matched calling action
                 $this->response = $this->invoke($route['fn'], $params);
                 
                 $numHandled++;
@@ -195,15 +209,19 @@ final class Router
     {
         // check if its a callback if then call it
         if (is_callable($fn)) {
-            $this->response = call_user_func_array($fn, $params);
+            return $this->response = call_user_func_array($fn, $params);
         } elseif (stripos($fn, '@') !== false) {
             // laravel like Controller@method routing
             list($controller, $method) = explode('@', $fn);
-            $controller = 'App\\Controllers\\'.$controller;
-            $this->response = call_user_func_array(array(new $controller(), $method), $params);
+            $controller = "App\\Controllers\\$controller";
+            return $this->response = call_user_func_array(array(new $controller(), $method), $params);
+        } elseif (\is_string($fn)) {
+            // Middleware Calling
+            $middleware = "App\\Middlewares\\$fn";
+            call_user_func_array([new $middleware(), 'handle'], $params);
         } else {
             throw new \InvalidArgumentException("Only callback or String allowed!");
         }
-        return $this->response;
+        return true;
     }
 }
